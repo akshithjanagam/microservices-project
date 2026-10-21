@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.10.8-slim@sha256:49749648f4426b31b20fca55ad854caa55ff59dc604f2f76b57d814e0a47c181 as base
+FROM python:3.10-slim-bookworm as base
 
 FROM base as builder
 
-RUN apt-get -qq update \
-    && apt-get install -y --no-install-recommends \
-        wget g++ \
-    && rm -rf /var/lib/apt/lists/*
-
+RUN set -eux; \
+    sed -i 's|deb.debian.org/debian-security|archive.debian.org/debian-security|g; s|security.debian.org/debian-security|archive.debian.org/debian-security|g' /etc/apt/sources.list; \
+    apt-get -o Acquire::Check-Valid-Until=false update; \
+    apt-get install -y --no-install-recommends wget g++; \
+    rm -rf /var/lib/apt/lists/*
 # download the grpc health probe
 # renovate: datasource=github-releases depName=grpc-ecosystem/grpc-health-probe
 ENV GRPC_HEALTH_PROBE_VERSION=v0.4.18
