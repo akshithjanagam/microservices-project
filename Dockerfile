@@ -12,16 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM python:3.10.8-slim as base
+FROM python:3.10.8-slim@sha256:49749648f4426b31b20fca55ad854caa55ff59dc604f2f76b57d814e0a47c181 as base
 
 FROM base as builder
 
-RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && apt-get update \
+RUN apt-get -qq update \
     && apt-get install -y --no-install-recommends \
-        wget \
-        g++ \
+        wget g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # download the grpc health probe
