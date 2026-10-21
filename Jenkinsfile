@@ -30,7 +30,7 @@ pipeline {
             steps {
                 withCredentials([
                     file(
-                        credentialsId: 'eks-kubeconfig-file',
+                        credentialsId: 'kubeconfig-file',
                         variable: 'KUBECONFIG'
                     )
                 ]) {
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 withCredentials([
                     file(
-                        credentialsId: 'eks-kubeconfig-file',
+                        credentialsId: 'kubeconfig-file',
                         variable: 'KUBECONFIG'
                     )
                 ]) {
