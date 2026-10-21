@@ -3,11 +3,36 @@ pipeline {
     agent any
 
     stages {
+        stage('Test EKS Connection') {
+            steps {
+                withCredentials([
+                    file(
+                        credentialsId: 'kubeconfig-file',
+                        variable: 'KUBECONFIG'
+                    )
+                ]) {
+                    sh '''
+                        set -e
+                        echo "Checking AWS identity..."
+                        aws sts get-caller-identity
+
+                        echo "Checking EKS nodes..."
+                        kubectl get nodes
+
+                        echo "Checking webapps namespace..."
+                        kubectl get pods -n webapps
+                    '''
+                }
+            }
+        }
+
         stage('Deploy To Kubernetes') {
             steps {
                 withCredentials([
-                    file(credentialsId: 'kubeconfig-file-new',
-                         variable: 'KUBECONFIG')
+                    file(
+                        credentialsId: 'kubeconfig-file',
+                        variable: 'KUBECONFIG'
+                    )
                 ]) {
                     sh '''
                         set -e
@@ -20,8 +45,10 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 withCredentials([
-                    file(credentialsId: 'kubeconfig-file-new',
-                         variable: 'KUBECONFIG')
+                    file(
+                        credentialsId: 'kubeconfig-file',
+                        variable: 'KUBECONFIG'
+                    )
                 ]) {
                     sh '''
                         set -e
